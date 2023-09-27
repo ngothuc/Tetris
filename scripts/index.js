@@ -202,6 +202,7 @@ class Board
     {
         this.ctx = ctx;
         this.grid = this.generateWhiteBoard();
+        this.score = 0;
     }
 
     generateWhiteBoard()
@@ -236,8 +237,19 @@ class Board
         })
         const newScore = ROWS - lastestGrid.length;
         const newRows = Array.from({length: newScore}, () => Array(COLS).fill(WHITE_COLOR_ID));
-        board.grid = [...newRows, ...lastestGrid];
-        console.log({lastestGrid});
+        if(newScore)
+        {
+          board.grid = [...newRows, ...lastestGrid];
+
+          this.handleScore(newScore * 10);
+          console.log({lastestGrid});
+        }
+    }
+
+    handleScore(newScore)
+    {
+      this.score += newScore;
+      document.getElementById("score").innerHTML = this.score;
     }
 }
 
