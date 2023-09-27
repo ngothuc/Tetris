@@ -203,6 +203,7 @@ class Board
         this.ctx = ctx;
         this.grid = this.generateWhiteBoard();
         this.score = 0;
+        this.gameOver = false;
     }
 
     generateWhiteBoard()
@@ -251,6 +252,11 @@ class Board
       this.score += newScore;
       document.getElementById("score").innerHTML = this.score;
     }
+
+    handleGameOver()
+    {
+      this.gameOver = true;
+    }
 }
 
 class Brick
@@ -261,7 +267,7 @@ class Brick
         this.layout = BRICK_LAYOUT[id];
         this.activeIndex = 0;
         this.colPos = 0;
-        this.rowPos = 0;
+        this.rowPos = -2;
     }
 
     draw() 
@@ -324,7 +330,17 @@ class Brick
             return;
         }
         this.handleLanded();
-        generateNewBrick();
+        if(!board.gameOver)
+        {
+          generateNewBrick();
+        }
+        else
+        {
+          alert("GAME OVER !!!");
+          clearInterval(refresh);
+          document.removeEventListener('keydown', keyCallback);
+          document.removeEventListener('keydown', key);
+        }
     }
 
     rotate()
@@ -339,21 +355,28 @@ class Brick
 
     checkCollision(nextRow, nextCol, nextLayout)
     {
-        for(let row = 0; row < nextLayout.length; row++)
-        {
-            for(let col = 0; col < nextLayout[0].length; col++)
-            {
-                if(nextLayout[row][col] !== WHITE_COLOR_ID)
-                {
-                    if((col + nextCol >= COLS) || (row + nextRow >= ROWS) || (col + nextCol < 0) || (board.grid[row+nextRow][col+nextCol] !== WHITE_COLOR_ID)) return true;
+      for (let row = 0; row < nextLayout.length; row++) {
+        for (let col = 0; col < nextLayout[0].length; col++) {
+            if (nextLayout[row][col] !== WHITE_COLOR_ID) {
+                if (
+                    (nextRow >= 0 && (col + nextCol >= COLS || col + nextCol < 0 || row + nextRow >= ROWS || board.grid[row + nextRow][col + nextCol] !== WHITE_COLOR_ID)) ||
+                    (nextRow < 0 && (col + nextCol >= COLS || col + nextCol < 0))
+                ) {
+                    return true;
                 }
             }
         }
-        return false;
+    }
+    return false;
     }
 
     handleLanded()
     {
+        if(this.rowPos <= 0)
+        {
+          board.handleGameOver();
+          return;
+        }
         for(let row = 0; row < this.layout[this.activeIndex].length; row++)
         {
             for(let col = 0; col < this.layout[this.activeIndex][0].length; col++)
@@ -381,7 +404,7 @@ brick.draw();
 brick.rotate();
 brick.rotate();
 
-setInterval
+const refresh = setInterval
 (
     () => 
     {
@@ -391,7 +414,7 @@ setInterval
 
 console.table(board.grid);
 
-document.addEventListener('keydown', (e) => 
+const key = document.addEventListener('keydown', (e) => 
 {
     console.log(e);
     switch(e.code)
