@@ -192,6 +192,7 @@ const WHITE_COLOR_ID = 7;
 
 const canvas = document.getElementById('board');
 const ctx = canvas.getContext('2d');
+const playButton = document.querySelector('.play-btn');
 
 ctx.canvas.width = COLS * BLOCK_SIZE;
 ctx.canvas.height = ROWS * BLOCK_SIZE;
@@ -338,8 +339,9 @@ class Brick
         {
           alert("GAME OVER !!!");
           clearInterval(refresh);
-          document.removeEventListener('keydown', keyCallback);
-          document.removeEventListener('keydown', key);
+          window.location.reload();          
+          // document.removeEventListener('keydown', keyCallback);
+          // document.removeEventListener('keydown', key);
         }
     }
 
@@ -435,3 +437,7 @@ const key = document.addEventListener('keydown', (e) =>
             break;
     }
 })
+
+playButton.addEventListener('click', () => {
+  window.location.reload();
+});
